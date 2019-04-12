@@ -3,7 +3,7 @@
 #SBATCH --partition=ultrasound
 #SBATCH --mem=16000
 #SBATCH --cpus-per-task=16
-#SBATCH --array=1-20%20
+#SBATCH --array=1-2000%20
 
 date
 hostname
