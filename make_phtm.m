@@ -2,7 +2,7 @@ function [pts,amp,Tx] = make_phtm(idx)
 
 %loadpath = 'Y:/jc500/DATA/imagenet/images/';
 loadpath = '/datacommons/ultrasound/jc500/DATA/imagenet/images/';
-loadname = [loadpath sprintf('val_%d.jpeg',idx-1)];
+loadname = [loadpath sprintf('val_%d.JPEG',idx-1)];
 img = single(rgb2gray(imread(loadname))); img = img/255;
 
 %Generate tissue phantom
