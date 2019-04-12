@@ -50,6 +50,7 @@ xdc_focus_times(emit_aperture,0,delays);
 [v, t1]=calc_scat_multi(emit_aperture, receive_aperture, pts, amp);
 
 savepath = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/',pdx-1);
+if ~exist(savepath,'dir'); mkdir(savepath); end
 save(sprintf('%s%s_part%d',savepath,tag,part),'v','t1')
 
 %Free space for aperture
