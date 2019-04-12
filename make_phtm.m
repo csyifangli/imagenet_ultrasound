@@ -1,5 +1,7 @@
 function [pts,amp,Tx] = make_phtm(idx)
 
+rng(0)
+
 %loadpath = 'Y:/jc500/DATA/imagenet/images/';
 loadpath = '/datacommons/ultrasound/jc500/DATA/imagenet/images/';
 loadname = [loadpath sprintf('val_%d.JPEG',idx-1)];
