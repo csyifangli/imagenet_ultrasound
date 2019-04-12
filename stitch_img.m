@@ -2,7 +2,7 @@ function stitch_img(pdx,na)
 
 addpath(genpath('/datacommons/ultrasound/jc500/GIT/Field_II_Pro/')); field_init(-1);
 addpath(genpath('/datacommons/ultrasound/jc500/GIT/Simulation/'))
-
+addpath(genpath('/datacommons/ultrasound/jc500/GIT/Beamforming/'))
 
 pad=[0 0];
 
@@ -41,6 +41,7 @@ Tx.excitation=1;
 if(~exist('fs','var')), fs=Tx.fs; end
 
 num_lines=na;
+angles = linspace(-30,30,na);
 tagi='sim_plane';
 tag = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/%s',pdx-1,tagi);
 
@@ -64,7 +65,22 @@ acq_params.f0=Tx.f0;
 acq_params.theta=angles;
 acq_params.steer=Tx.lat_focus*[sind(angles(:)) zeros(length(angles),1) cosd(angles(:))];
 
+bf_params.polar = 1;
+bf_params.r = (1:acq_params.samples)/acq_params.fs*acq_params.c/2;
+bf_params.theta = -30:30;
+bf_params.channel = 1;
+bf=planewave(acq_params,bf_params);
+rf_polar=bf.beamform(rf);
+
+[rf_cart,z,x] = polar2cart(rf_polar,acq_params,bf_params);
+bf_params.x = x;
+bf_params.z = z;
+
+loadpath = '/datacommons/ultrasound/jc500/DATA/imagenet/images/';
+loadname = [loadpath sprintf('val_%d.JPEG',pdx-1)];
+img = single(rgb2gray(imread(loadname))); img = img/255;
+
 savepath = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/',pdx-1);
 savename = 'data.mat';
-save(sprintf('%s%s',savepath,savename),'rf','acq_params')
+save(sprintf('%s%s',savepath,savename),'rf','acq_params','bf_params','img')
 fprintf('Saved to %s\n',sprintf('%s%s',savepath,savename));

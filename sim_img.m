@@ -5,7 +5,7 @@ addpath(genpath('/datacommons/ultrasound/jc500/GIT/Simulation/'))
 
 angles = linspace(-30,30,na);
 part = 1:na;
-pdx = 1:1;
+pdx = 1:100;
 [part,pdx] = meshgrid(part,pdx);
 part = part(idx); pdx = pdx(idx);
 
