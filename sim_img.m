@@ -52,6 +52,7 @@ xdc_focus_times(emit_aperture,0,delays);
 savepath = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/',pdx-1);
 if ~exist(savepath,'dir'); mkdir(savepath); end
 save(sprintf('%s%s_part%d',savepath,tag,part),'v','t1')
+if part == 1; save([savepath 'phtm.mat'],'pts','amp'); end
 
 %Free space for aperture
 xdc_free (emit_aperture)

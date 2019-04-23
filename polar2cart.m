@@ -1,10 +1,10 @@
-function [data_out,z,x] = polar2cart(data_in,acq_params,bf_params)
+function data_out = polar2cart(data_in,acq_params,bf_params)
 
 r = bf_params.r;
 theta = bf_params.theta;
 apex = [0 0 0];
-z = r;
-x = acq_params.rx_pos(:,1);
+z = bf_params.z;
+x = bf_params.x;
 
 if(length(apex)==1), apex=[0 0 apex];
 elseif(length(apex)==2), apex=[apex(1) 0 apex(2)];end

@@ -9,7 +9,7 @@ pad=[0 0];
 %General parameters
 Tx.c=1540;                              % Speed of sound [m/s]
 Tx.f0=5e6;                              % Center frequency [Hz]
-Tx.fs=120e6;                            % Sampling frequency [Hz]
+Tx.fs=100e6;                            % Sampling frequency [Hz]
 Tx.BW=.8;                               % Fractional BW
 Tx.lambda=Tx.c/Tx.f0;                   % Wavelength [m]
 
@@ -44,6 +44,7 @@ num_lines=na;
 angles = linspace(-30,30,na);
 tagi='sim_plane';
 tag = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/%s',pdx-1,tagi);
+%tag = sprintf('Y:/jc500/DATA/imagenet/field/phtm%03d/%s',pdx-1,tagi);
 
 [rf,t]=stitch_rf_files(tag,num_lines,Tx,fs);
 
@@ -65,16 +66,20 @@ acq_params.f0=Tx.f0;
 acq_params.theta=angles;
 acq_params.steer=Tx.lat_focus*[sind(angles(:)) zeros(length(angles),1) cosd(angles(:))];
 
-bf_params.polar = 1;
-bf_params.r = (1:acq_params.samples)/acq_params.fs*acq_params.c/2;
-bf_params.theta = -30:30;
+x_size=40/1000;
+y_size=2/1000;
+z_size=40/1000;
+z_start=40/1000;
+bf_params.x = linspace(-x_size/2,x_size/2,200);
+bf_params.z = (acq_params.t0+(1:acq_params.samples))/acq_params.fs*acq_params.c/2;
+bf_params.tx_channel = 1;
 bf_params.channel = 1;
-bf=planewave(acq_params,bf_params);
-rf_polar=bf.beamform(rf);
 
-[rf_cart,z,x] = polar2cart(rf_polar,acq_params,bf_params);
-bf_params.x = x;
-bf_params.z = z;
+order = 3; wn = [0.6 1.4]*Tx.f0/(Tx.fs/2);
+[b,a] = butter(3,wn); bf_params.a = a; bf_params.b = b;
+
+bf=planewave(acq_params,bf_params);
+rf_focused=bf.beamform(rf);
 
 loadpath = '/datacommons/ultrasound/jc500/DATA/imagenet/images/';
 loadname = [loadpath sprintf('val_%d.JPEG',pdx-1)];
@@ -82,5 +87,6 @@ img = single(rgb2gray(imread(loadname))); img = img/255;
 
 savepath = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/',pdx-1);
 savename = 'data.mat';
-save(sprintf('%s%s',savepath,savename),'rf','acq_params','bf_params','img')
+whos
+save(sprintf('%s%s',savepath,savename),'rf_focused','acq_params','bf_params','img')
 fprintf('Saved to %s\n',sprintf('%s%s',savepath,savename));

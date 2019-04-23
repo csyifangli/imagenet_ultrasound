@@ -12,12 +12,12 @@ scatpercell=15;
 x_size=40/1000;
 y_size=2/1000;
 z_size=40/1000;
-z_start=30/1000;
+z_start=40/1000;
 
 %General parameters
 Tx.c=1540;                              % Speed of sound [m/s]
 Tx.f0=5e6;                              % Center frequency [Hz]
-Tx.fs=120e6;                            % Sampling frequency [Hz]
+Tx.fs=100e6;                            % Sampling frequency [Hz]
 Tx.BW=.8;                               % Fractional BW
 Tx.lambda=Tx.c/Tx.f0;                   % Wavelength [m]
 
