@@ -8,4 +8,4 @@ date
 hostname
 
 module load Matlab/R2017b
-matlab -nojvm -nodisplay -nosplash -r "cd('/datacommons/ultrasound/jc500/GIT/imagenet_ultrasound/');tic;prep_save();toc;exit;"
+matlab -nojvm -nodisplay -nosplash -r "cd('/datacommons/ultrasound/jc500/GIT/imagenet_ultrasound/simulation/');tic;prep_save();toc;exit;"
