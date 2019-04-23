@@ -1,3 +1,4 @@
 *.asv
 *.out
 *venv
+*.h5
