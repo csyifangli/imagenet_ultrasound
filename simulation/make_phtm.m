@@ -5,8 +5,11 @@ rng(0)
 %loadpath = 'Y:/jc500/DATA/imagenet/images/';
 loadpath = '/datacommons/ultrasound/jc500/DATA/imagenet/images/';
 loadname = [loadpath sprintf('val_%d.JPEG',idx-1)];
-img = single(rgb2gray(imread(loadname))); img = img/255;
-
+try
+    img = single(rgb2gray(imread(loadname))); img = img/255;
+catch
+    img = single(imread(loadname)); img = img/255;
+end
 %Generate tissue phantom
 scatpercell=15;
 x_size=40/1000;

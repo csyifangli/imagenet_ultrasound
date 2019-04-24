@@ -24,7 +24,7 @@ Tx.lat_focus=40e-3;                     % Axial-lateral focus [m]
 %Elevation dimension
 Tx.num_elements_y=1;
 Tx.kerf_y=0;
-Tx.pitch_y=5/1000;                   
+Tx.pitch_y=5/1000;
 Tx.element_height=Tx.pitch_y-Tx.kerf_y; % Element height [m]
 Tx.sub_y=Tx.sub_x*round(Tx.element_height/Tx.element_width);
 Tx.elev_focus=40/1000;                  % Axial-elevation focus [m]
@@ -43,7 +43,7 @@ if(~exist('fs','var')), fs=Tx.fs; end
 num_lines=na;
 angles = linspace(-30,30,na);
 tagi='sim_plane';
-tag = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/%s',pdx-1,tagi);
+tag = sprintf('/work/jc500/DATA/imagenet/field/phtm%03d/%s',pdx-1,tagi);
 %tag = sprintf('Y:/jc500/DATA/imagenet/field/phtm%03d/%s',pdx-1,tagi);
 
 [rf,t]=stitch_rf_files(tag,num_lines,Tx,fs);
@@ -83,10 +83,12 @@ rf_focused=bf.beamform(rf);
 
 loadpath = '/datacommons/ultrasound/jc500/DATA/imagenet/images/';
 loadname = [loadpath sprintf('val_%d.JPEG',pdx-1)];
-img = single(rgb2gray(imread(loadname))); img = img/255;
+try
+    img = single(rgb2gray(imread(loadname))); img = img/255;
+catch
+    img = single(imread(loadname)); img = img/255;
+end
 
-savepath = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/phtm%03d/',pdx-1);
-savename = 'data.mat';
-whos
-save(sprintf('%s%s',savepath,savename),'rf_focused','acq_params','bf_params','img')
-fprintf('Saved to %s\n',sprintf('%s%s',savepath,savename));
+savepath = sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/stitched/phtm%03d_data.mat',pdx-1);
+save(savepath,'rf_focused','acq_params','bf_params','img')
+fprintf('Saved to %s\n',savepath);
