@@ -2,9 +2,9 @@ function prep_save()
 
 count = 0;
 filename = '/datacommons/ultrasound/jc500/DATA/imagenet/training/data_all.h5';
-h5create(filename,'/train_images',[3 192 512 490])
-h5create(filename,'/train_labels',[192 512 490])
-for pdx = 0:489
+h5create(filename,'/train_images',[3 192 512 480])
+h5create(filename,'/train_labels',[192 512 480])
+for pdx = 0:479
     count = count+1;
     t = tic;
     load(sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/stitched/phtm%03d_data.mat',pdx))
@@ -22,28 +22,30 @@ for pdx = 0:489
     [xi,yi] = meshgrid(1:200,1:520);
     [xq,yq] = meshgrid(linspace(1,200,192),linspace(1,520,512));
     
-    rf_label(:,:,count) = interp2(xi,yi,sum(rf_focused(ax(1):10:ax(2),lat(1):lat(2),:),3),xq,yq);
+    env = abs(hilbert(sum(rf_focused(ax(1):10:ax(2),lat(1):lat(2),:),3)));
+    env = env/max(env(:));
+    
+    env_label(:,:,count) = interp2(xi,yi,env,xq,yq);
     a = round(linspace(1,20,5)); a = a(2:end-1);
     for i = 1:3
-        ax
-        lat
-        size(rf_focused)
-        rf_sub(:,:,i) = interp2(xi,yi,rf_focused(ax(1):10:ax(2),lat(1):lat(2),a(i)),xq,yq);
+        env = abs(hilbert(rf_focused(ax(1):10:ax(2),lat(1):lat(2),a(i))));
+        env = env/max(env(:));
+        env_sub(:,:,i) = interp2(xi,yi,env,xq,yq);
     end
-    rf_feed(:,:,:,count) = rf_sub;
-    if pdx == 0; disp(size(rf_sub)); end
-    
+    env_feed(:,:,:,count) = env_sub;
+
     fprintf('Loaded and saved %d of %d in %1.2f seconds.\n',pdx+1,500,toc(t))
 end
-h5write(filename,'/train_images',permute(rf_feed,[3 2 1 4]))
-h5write(filename,'/train_labels',permute(rf_label,[2 1 3]))
+
+h5write(filename,'/train_images',permute(env_feed,[3 2 1 4]))
+h5write(filename,'/train_labels',permute(env_label,[2 1 3]))
 clear
 
 count = 0;
 filename = '/datacommons/ultrasound/jc500/DATA/imagenet/training/data_all.h5';
-h5create(filename,'/validation_images',[3 192 512 10])
-h5create(filename,'/validation_labels',[192 512 10])
-for pdx = 490:499
+h5create(filename,'/validation_images',[3 192 512 20])
+h5create(filename,'/validation_labels',[192 512 20])
+for pdx = 480:499
     count = count+1;
     t = tic;
     load(sprintf('/datacommons/ultrasound/jc500/DATA/imagenet/field/stitched/phtm%03d_data.mat',pdx))
@@ -61,16 +63,22 @@ for pdx = 490:499
     [xi,yi] = meshgrid(1:200,1:520);
     [xq,yq] = meshgrid(linspace(1,200,192),linspace(1,520,512));
     
-    rf_label(:,:,count) = interp2(xi,yi,sum(rf_focused(ax(1):10:ax(2),lat(1):lat(2),:),3),xq,yq);
+    env = abs(hilbert(sum(rf_focused(ax(1):10:ax(2),lat(1):lat(2),:),3)));
+    env = env/max(env(:));
+    
+    env_label(:,:,count) = interp2(xi,yi,env,xq,yq);
     a = round(linspace(1,20,5)); a = a(2:end-1);
     for i = 1:3
-        rf_sub(:,:,i) = interp2(xi,yi,rf_focused(ax(1):10:ax(2),lat(1):lat(2),a(i)),xq,yq);
+        env = abs(hilbert(rf_focused(ax(1):10:ax(2),lat(1):lat(2),a(i))));
+        env = env/max(env(:));
+        env_sub(:,:,i) = interp2(xi,yi,env,xq,yq);
     end
-    rf_feed(:,:,:,count) = rf_sub;
+    env_feed(:,:,:,count) = env_sub;
 
     fprintf('Loaded and saved %d of %d in %1.2f seconds.\n',pdx+1,500,toc(t))
 end
-h5write(filename,'/validation_images',permute(rf_feed,[3 2 1 4]))
-h5write(filename,'/validation_labels',permute(rf_label,[2 1 3]))
+
+h5write(filename,'/validation_images',permute(env_feed,[3 2 1 4]))
+h5write(filename,'/validation_labels',permute(env_label,[2 1 3]))
 clear
 end
